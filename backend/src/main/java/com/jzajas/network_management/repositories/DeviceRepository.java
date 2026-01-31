@@ -1,9 +1,9 @@
 package com.jzajas.network_management.repositories;
 
-import com.jzajas.network_management.entities.Node;
+import com.jzajas.network_management.entities.Device;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface NodeRepository extends JpaRepository<Long, Node> {
+public interface DeviceRepository extends JpaRepository<Long, Device> {
 }
