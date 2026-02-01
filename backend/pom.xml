@@ -31,7 +31,6 @@
 		<spring.starters.version>4.0.0</spring.starters.version>
 		<lombok.version>1.18.38</lombok.version>
 		<h2.database.version>2.2.224</h2.database.version>
-		<reactor.core.version>3.8.0</reactor.core.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -55,12 +54,6 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 			<version>${spring.starters.version}</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>io.projectreactor</groupId>
-			<artifactId>reactor-core</artifactId>
-			<version>${reactor.core.version}</version>
 			<scope>compile</scope>
 		</dependency>
 
