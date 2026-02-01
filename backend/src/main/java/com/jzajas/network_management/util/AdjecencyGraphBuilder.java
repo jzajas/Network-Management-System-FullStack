@@ -26,5 +26,6 @@ public class AdjecencyGraphBuilder implements  GraphBuilder{
             graph.get(b).add(a);
         }
 
-        return graph;    }
+        return graph;
+    }
 }

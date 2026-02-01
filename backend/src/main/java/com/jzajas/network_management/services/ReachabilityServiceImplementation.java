@@ -15,7 +15,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-
 @Service
 @RequiredArgsConstructor
 public class ReachabilityServiceImplementation implements ReachabilityService{
@@ -24,7 +23,6 @@ public class ReachabilityServiceImplementation implements ReachabilityService{
     private final ConnectionRepository connectionRepository;
     private final GraphBuilder graphBuilder;
     private final ReachabilityCalculator reachabilityCalculator;
-
 
     @Transactional(readOnly = true)
     @Override
@@ -42,7 +40,6 @@ public class ReachabilityServiceImplementation implements ReachabilityService{
                         Device::isActive
                 ));
 
-        // 5. Invoke reachability calculator
         return reachabilityCalculator.calculateReachable(
                 sourceDeviceId,
                 graph,

@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 
-
 public class BfsReachabilityCalculator implements ReachabilityCalculator {
     @Override
     public Set<Long> calculateReachable(

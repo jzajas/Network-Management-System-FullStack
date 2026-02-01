@@ -1,6 +1,5 @@
 package com.jzajas.network_management.events;
 
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;

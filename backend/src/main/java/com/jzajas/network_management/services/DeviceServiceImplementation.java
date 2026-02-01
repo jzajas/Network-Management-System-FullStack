@@ -1,14 +1,13 @@
 package com.jzajas.network_management.services;
 
-import com.jzajas.network_management.events.DeviceStateChangedEvent;
 import com.jzajas.network_management.dtos.PatchDeviceDTO;
 import com.jzajas.network_management.entities.Device;
+import com.jzajas.network_management.events.DeviceStateChangedEvent;
 import com.jzajas.network_management.events.EventPublisher;
 import com.jzajas.network_management.repositories.DeviceRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 
 @Service
 @RequiredArgsConstructor
@@ -19,7 +18,6 @@ public class DeviceServiceImplementation implements DeviceService {
 
     private final DeviceRepository deviceRepository;
     private final EventPublisher eventPublisher;
-
 
     @Override
     @Transactional
@@ -40,5 +38,4 @@ public class DeviceServiceImplementation implements DeviceService {
 
         return UPDATE_MESSAGE;
     }
-
 }
