@@ -21,6 +21,6 @@ public class Device {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "status", nullable = false)
-    private boolean status;
+    @Column(name = "active", nullable = false)
+    private boolean active;
 }
