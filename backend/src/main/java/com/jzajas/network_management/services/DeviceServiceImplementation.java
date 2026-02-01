@@ -1,6 +1,6 @@
 package com.jzajas.network_management.services;
 
-import com.jzajas.network_management.dtos.DeviceStateChangedEvent;
+import com.jzajas.network_management.events.DeviceStateChangedEvent;
 import com.jzajas.network_management.dtos.PatchDeviceDTO;
 import com.jzajas.network_management.entities.Device;
 import com.jzajas.network_management.events.EventPublisher;
