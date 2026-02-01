@@ -7,8 +7,6 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.List;
-
 
 @Entity
 @Table(name = "nodes")
@@ -25,7 +23,4 @@ public class Device {
 
     @Column(name = "status", nullable = false)
     private boolean status;
-
-    @Column(name = "connections", nullable = true)
-    private List<Long> connections;
 }
