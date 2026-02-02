@@ -27,7 +27,6 @@ public class ReachabilityServiceImplementation implements ReachabilityService{
     @Transactional(readOnly = true)
     @Override
     public Set<Long> computeReachableFrom(Long sourceDeviceId) {
-
         List<Device> devices = deviceRepository.findAll();
         List<Connection> connections = connectionRepository.findAll();
 

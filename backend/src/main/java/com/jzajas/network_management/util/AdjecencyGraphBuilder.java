@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 
 public class AdjecencyGraphBuilder implements  GraphBuilder{
+
     @Override
     public Map<Long, Set<Long>> buildGraph(List<Device> devices, List<Connection> connections) {
         Map<Long, Set<Long>> graph = new HashMap<>();

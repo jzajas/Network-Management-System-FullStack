@@ -1,11 +1,11 @@
 package com.jzajas.network_management.events;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@Getter
+@AllArgsConstructor
 public class DeviceStateChangedEvent {
     private Long deviceId;
     private boolean active;
-
-    public DeviceStateChangedEvent(Long deviceId, boolean active) {
-        this.deviceId = deviceId;
-        this.active = active;
-    }
 }
