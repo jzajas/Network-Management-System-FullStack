@@ -2,6 +2,7 @@ package com.jzajas.network_management.services;
 
 import com.jzajas.network_management.entities.Connection;
 import com.jzajas.network_management.entities.Device;
+import com.jzajas.network_management.events.DeltaDevices;
 import com.jzajas.network_management.repositories.ConnectionRepository;
 import com.jzajas.network_management.repositories.DeviceRepository;
 import com.jzajas.network_management.util.GraphBuilder;
@@ -17,6 +18,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -100,5 +102,36 @@ public class ReachabilityServiceImplementationTest {
         Set<Long> result = reachabilityService.computeReachableFrom(sourceDeviceId);
 
         assertEquals(Set.of(), result);
+    }
+
+    @Test
+    void givenPreviousAndCurrentReachable_whenComputeDelta_thenAddedAndRemovedAreCorrect() {
+        Set<Long> previous = Set.of(1L, 2L, 3L);
+        Set<Long> current = Set.of(2L, 3L, 4L);
+
+        DeltaDevices delta = reachabilityService.computeDelta(previous, current);
+
+        assertEquals(Set.of(4L), delta.getAdded());
+        assertEquals(Set.of(1L), delta.getRemoved());
+    }
+
+    @Test
+    void givenIdenticalReachableSets_whenComputeDelta_thenDeltaIsEmpty() {
+        Set<Long> reachable = Set.of(1L, 2L);
+
+        DeltaDevices delta = reachabilityService.computeDelta(reachable, reachable);
+
+        assertTrue(delta.isEmpty());
+    }
+
+    @Test
+    void givenEmptyPrevious_whenComputeDelta_thenAllCurrentAreAdded() {
+        Set<Long> previous = Set.of();
+        Set<Long> current = Set.of(1L, 2L);
+
+        DeltaDevices delta = reachabilityService.computeDelta(previous, current);
+
+        assertEquals(Set.of(1L, 2L), delta.getAdded());
+        assertEquals(Set.of(), delta.getRemoved());
     }
 }

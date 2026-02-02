@@ -2,6 +2,7 @@ package com.jzajas.network_management.services;
 
 import com.jzajas.network_management.entities.Connection;
 import com.jzajas.network_management.entities.Device;
+import com.jzajas.network_management.events.DeltaDevices;
 import com.jzajas.network_management.repositories.ConnectionRepository;
 import com.jzajas.network_management.repositories.DeviceRepository;
 import com.jzajas.network_management.util.GraphBuilder;
@@ -10,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -44,5 +46,19 @@ public class ReachabilityServiceImplementation implements ReachabilityService{
                 graph,
                 deviceActiveMap
         );
+    }
+
+    @Override
+    public DeltaDevices computeDelta(
+            Set<Long> previousReachable,
+            Set<Long> currentReachable
+    ) {
+        Set<Long> added = new HashSet<>(currentReachable);
+        added.removeAll(previousReachable);
+
+        Set<Long> removed = new HashSet<>(previousReachable);
+        removed.removeAll(currentReachable);
+
+        return new DeltaDevices(added, removed);
     }
 }
