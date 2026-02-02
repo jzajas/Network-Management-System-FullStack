@@ -7,10 +7,12 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.Getter;
 
 
 @Entity
 @Table(name = "connections")
+@Getter
 public class Connection {
 
     @Id
@@ -18,7 +20,7 @@ public class Connection {
     private Long id;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "device_a_id") // column in 'connections' table
+    @JoinColumn(name = "device_a_id")
     private Device deviceA;
 
     @ManyToOne(optional = false)

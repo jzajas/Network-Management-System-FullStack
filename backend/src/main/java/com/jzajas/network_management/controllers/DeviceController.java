@@ -1,6 +1,8 @@
 package com.jzajas.network_management.controllers;
 
 import com.jzajas.network_management.dtos.PatchDeviceDTO;
+import com.jzajas.network_management.services.DeviceServiceImplementation;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,8 +19,8 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 @RequestMapping("/devices")
 @RequiredArgsConstructor
 public class DeviceController {
-    private static final String UPDATE_MESSAGE = "Update Successful";
 
+    private final DeviceServiceImplementation deviceService;
 
     @GetMapping("/{id}/reachable-devices")
     public SseEmitter streamReachableDevices(@PathVariable Long id) {
@@ -41,7 +43,7 @@ public class DeviceController {
     @PatchMapping("/{id}")
     public ResponseEntity<String> patchDeviceById(
             @PathVariable Long id,
-            @RequestBody PatchDeviceDTO dto
+            @Valid @RequestBody PatchDeviceDTO dto
     ) {
         // TODO:
         // 1. Validate input (e.g. request.active not null)
@@ -53,6 +55,8 @@ public class DeviceController {
         //    - persist change
         //    - publish DeviceStateChangedEvent (after commit)
 
-        return new ResponseEntity(UPDATE_MESSAGE, HttpStatus.OK);
+        String message = deviceService.patchDevice(id, dto);
+
+        return new ResponseEntity("UPDATE_MESSAGE", HttpStatus.OK);
     }
 }
