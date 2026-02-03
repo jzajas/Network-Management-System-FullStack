@@ -1,4 +1,4 @@
-package com.jzajas.network_management.dtos;
+package com.jzajas.network_management.events;
 
 public enum EventTypes {
     INITIAL_STATE,

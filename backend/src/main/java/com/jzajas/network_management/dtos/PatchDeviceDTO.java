@@ -7,7 +7,6 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class PatchDeviceDTO {
-
     @NotNull(message = "Status is required")
     private boolean active;
 }
