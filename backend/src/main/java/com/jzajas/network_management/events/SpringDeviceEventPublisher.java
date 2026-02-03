@@ -10,7 +10,6 @@ public class SpringDeviceEventPublisher implements EventPublisher {
 
     private final ApplicationEventPublisher applicationEventPublisher;
 
-
     @Override
     public void publish(Object domainEvent) {
         applicationEventPublisher.publishEvent(domainEvent);

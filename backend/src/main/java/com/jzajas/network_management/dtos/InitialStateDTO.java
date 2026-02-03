@@ -1,5 +1,7 @@
 package com.jzajas.network_management.dtos;
 
+import com.jzajas.network_management.events.EventTypes;
+
 import java.util.List;
 
 

@@ -1,6 +1,6 @@
 package com.jzajas.network_management.services;
 
-import com.jzajas.network_management.dtos.EventTypes;
+import com.jzajas.network_management.events.EventTypes;
 import com.jzajas.network_management.events.DeltaDevices;
 import com.jzajas.network_management.events.DeviceStateChangedEvent;
 import com.jzajas.network_management.sse.Subscription;
