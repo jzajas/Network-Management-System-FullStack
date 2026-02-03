@@ -2,11 +2,11 @@ package com.jzajas.network_management.services;
 
 import com.jzajas.network_management.dtos.InitialStateDTO;
 import com.jzajas.network_management.events.EventTypes;
+import com.jzajas.network_management.sse.SseEmitterFactory;
 import com.jzajas.network_management.sse.Subscription;
 import com.jzajas.network_management.sse.SubscriptionRegistry;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
@@ -15,7 +15,6 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.TimeoutException;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
@@ -34,6 +33,9 @@ public class SubscriptionServiceTest {
     @Mock
     private SubscriptionRegistry subscriptionRegistry;
 
+    @Mock
+    private SseEmitterFactory sseEmitterFactory;
+
     @Spy
     @InjectMocks
     private SubscriptionServiceImplementation subscriptionService;
@@ -44,25 +46,28 @@ public class SubscriptionServiceTest {
     void givenRootDeviceId_whenSubscribe_thenInitialStateIsSentAndSubscriptionRegistered() {
         Set<Long> reachable = Set.of(2L, 3L, 4L);
         UUID subscriptionId = UUID.randomUUID();
+        SseEmitter emitter = new SseEmitter();
 
         when(reachabilityService.computeReachableFrom(ROOT_DEVICE_ID))
                 .thenReturn(reachable);
         when(subscriptionRegistry.addSubscription(any()))
                 .thenReturn(subscriptionId);
+        when(sseEmitterFactory.create(any(), any()))
+                .thenReturn(emitter);
 
-        SseEmitter emitter = subscriptionService.subscribe(ROOT_DEVICE_ID);
+        SseEmitter actualEmitter = subscriptionService.subscribe(ROOT_DEVICE_ID);
 
-        assertNotNull(emitter);
+        assertNotNull(actualEmitter);
 
         verify(reachabilityService)
                 .computeReachableFrom(ROOT_DEVICE_ID);
         verify(subscriptionRegistry)
                 .addSubscription(any(Subscription.class));
         verify(subscriptionService).send(
-                same(emitter),
+                same(actualEmitter),
                 argThat(dto ->
                         dto instanceof InitialStateDTO &&
-                                ((InitialStateDTO) dto).getType() == EventTypes.INITIAL_STATE &&
+                                dto.getType() == EventTypes.INITIAL_STATE &&
                                 ((InitialStateDTO) dto).getDeviceIds().containsAll(reachable)
                 )
         );
@@ -70,11 +75,14 @@ public class SubscriptionServiceTest {
 
     @Test
     void givenSubscription_whenSubscribe_thenInitialStateIsSentOnlyOnce() {
+        SseEmitter emitter = new SseEmitter();
+
         when(reachabilityService.computeReachableFrom(ROOT_DEVICE_ID))
                 .thenReturn(Set.of(2L, 3L));
-
         when(subscriptionRegistry.addSubscription(any()))
                 .thenReturn(UUID.randomUUID());
+        when(sseEmitterFactory.create(any(), any()))
+                .thenReturn(emitter);
 
         subscriptionService.subscribe(ROOT_DEVICE_ID);
 
