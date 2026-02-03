@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class ReachabilityServiceImplementation implements ReachabilityService{
+public class ReachabilityServiceImplementation implements ReachabilityService {
 
     private final DeviceRepository deviceRepository;
     private final ConnectionRepository connectionRepository;

@@ -28,8 +28,8 @@ class DeviceServiceTests {
     private static final String SUCCESSFUL_UPDATE_MESSAGE = "Update Successful";
     private static final String NOT_FOUND_ERROR_MESSAGE = "Device Not Found";
     private  static final String INVALID_STATUS_ERROR_MESSAGE = "Invalid Status";
-    public static final long DEFAULT_ID = 1L;
-    public static final String DEFAULT_NAME = "Lublin";
+    private static final long DEFAULT_ID = 1L;
+    private static final String DEFAULT_NAME = "Lublin";
 
     @Mock
     private DeviceRepository deviceRepository;
