@@ -17,7 +17,7 @@ import java.util.UUID;
 @Service
 @AllArgsConstructor
 public class SubscriptionServiceImplementation implements SubscriptionService {
-    private final ReachabilityService reachabilityService;
+    private final ReachabilityDeviceService reachabilityDeviceService;
     private final SubscriptionRegistry subscriptionRegistry;
     private final SseEmitterFactory sseEmitterFactory;
     private final SseEventPublisher sseEventPublisher;
@@ -27,7 +27,7 @@ public class SubscriptionServiceImplementation implements SubscriptionService {
     public SseEmitter subscribe(Long rootDeviceId) {
 
         Set<Long> initialReachable =
-                reachabilityService.computeReachableFrom(rootDeviceId);
+                reachabilityDeviceService.computeReachableFrom(rootDeviceId);
 
         Subscription subscription = new Subscription(
                 rootDeviceId,

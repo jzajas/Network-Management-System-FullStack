@@ -25,7 +25,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class ReachabilityServiceImplementationTest {
+public class ReachabilityDeviceServiceImplementationTest {
 
     @Mock
     private DeviceRepository deviceRepository;
@@ -40,7 +40,7 @@ public class ReachabilityServiceImplementationTest {
     private ReachabilityCalculator reachabilityCalculator;
 
     @InjectMocks
-    private ReachabilityServiceImplementation reachabilityService;
+    private ReachabilityDeviceServiceImplementation reachabilityService;
 
     @Test
     void givenDevicesAndConnectionsExist_whenComputeReachableFrom_thenGraphIsBuiltAndReachabilityCalculated() {
