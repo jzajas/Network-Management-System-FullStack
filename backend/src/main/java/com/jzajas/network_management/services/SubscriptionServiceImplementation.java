@@ -1,8 +1,8 @@
 package com.jzajas.network_management.services;
 
 import com.jzajas.network_management.dtos.BasicStateDTO;
-import com.jzajas.network_management.dtos.InitialStateDTO;
 import com.jzajas.network_management.dtos.DeviceStateChangeDTO;
+import com.jzajas.network_management.dtos.InitialStateDTO;
 import com.jzajas.network_management.events.DeltaDevices;
 import com.jzajas.network_management.events.DeviceStateChangedEvent;
 import com.jzajas.network_management.events.EventTypes;
@@ -83,7 +83,7 @@ public class SubscriptionServiceImplementation implements SubscriptionService {
         }
     }
 
-    private void send(SseEmitter emitter, BasicStateDTO dto) {
+    protected void send(SseEmitter emitter, BasicStateDTO dto) {
         try {
             emitter.send(
                     SseEmitter.event()
