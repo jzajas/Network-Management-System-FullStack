@@ -3,29 +3,33 @@ package com.jzajas.network_management.services;
 import com.jzajas.network_management.dtos.InitialStateDTO;
 import com.jzajas.network_management.events.EventTypes;
 import com.jzajas.network_management.sse.SseEmitterFactory;
+import com.jzajas.network_management.sse.SseEventPublisher;
 import com.jzajas.network_management.sse.Subscription;
 import com.jzajas.network_management.sse.SubscriptionRegistry;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.Set;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.ArgumentMatchers.same;
-import static org.mockito.Mockito.times;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class SubscriptionServiceTest {
+    private static final Long DEFAULT_ID_1 = 1L;
+    private static final Long DEFAULT_ID_2 = 2L;
+    private static final Long DEFAULT_ID_3 = 3L;
+    private static final Long DEFAULT_TIMEOUT = 0L;
+    private static final UUID SUBSCRIPTION_ID = UUID.randomUUID();
 
     @Mock
     private ReachabilityDeviceService reachabilityDeviceService;
@@ -36,46 +40,49 @@ public class SubscriptionServiceTest {
     @Mock
     private SseEmitterFactory sseEmitterFactory;
 
-    @Spy
+    @Mock
+    private SseEventPublisher sseEventPublisher;
+
     @InjectMocks
     private SubscriptionServiceImplementation subscriptionService;
 
-    private static final Long ROOT_DEVICE_ID = 1L;
-
     @Test
-    void givenRootDeviceId_whenSubscribe_thenInitialStateIsSentAndSubscriptionRegistered() {
-        Set<Long> reachable = Set.of(2L, 3L, 4L);
-        UUID subscriptionId = UUID.randomUUID();
-        SseEmitter emitter = new SseEmitter();
+    void givenRootDevice_whenSubscribe_thenSubscriptionIsRegisteredAndInitialStatePublished() {
+        Set<Long> reachable = Set.of(DEFAULT_ID_2, DEFAULT_ID_3);
+        SseEmitter emitter = new SseEmitter(DEFAULT_TIMEOUT);
 
-        when(reachabilityDeviceService.computeReachableFrom(ROOT_DEVICE_ID))
+        when(reachabilityDeviceService.computeReachableFrom(DEFAULT_ID_1))
                 .thenReturn(reachable);
-        when(subscriptionRegistry.addSubscription(any()))
-                .thenReturn(subscriptionId);
-        when(sseEmitterFactory.create(any(), any()))
-                .thenReturn(emitter);
 
-        SseEmitter actualEmitter = subscriptionService.subscribe(ROOT_DEVICE_ID);
+        when(subscriptionRegistry.addSubscription(any(Subscription.class)))
+                .thenReturn(SUBSCRIPTION_ID);
 
-        assertNotNull(actualEmitter);
+        when(sseEmitterFactory.create(
+                eq(SUBSCRIPTION_ID),
+                any()
+        )).thenReturn(emitter);
+
+        SseEmitter result = subscriptionService.subscribe(DEFAULT_ID_1);
+
+        assertSame(emitter, result);
 
         verify(reachabilityDeviceService)
-                .computeReachableFrom(ROOT_DEVICE_ID);
+                .computeReachableFrom(DEFAULT_ID_1);
+
         verify(subscriptionRegistry)
                 .addSubscription(any(Subscription.class));
-    }
 
-    @Test
-    void givenSubscription_whenSubscribe_thenInitialStateIsSentOnlyOnce() {
-        SseEmitter emitter = new SseEmitter();
+        verify(sseEmitterFactory)
+                .create(eq(SUBSCRIPTION_ID), any());
 
-        when(reachabilityDeviceService.computeReachableFrom(ROOT_DEVICE_ID))
-                .thenReturn(Set.of(2L, 3L));
-        when(subscriptionRegistry.addSubscription(any()))
-                .thenReturn(UUID.randomUUID());
-        when(sseEmitterFactory.create(any(), any()))
-                .thenReturn(emitter);
-
-        subscriptionService.subscribe(ROOT_DEVICE_ID);
+        verify(sseEventPublisher)
+                .publish(
+                        any(Subscription.class),
+                        argThat(dto ->
+                                dto instanceof InitialStateDTO
+                                        && ((InitialStateDTO) dto).getType() == EventTypes.INITIAL_STATE
+                                        && ((InitialStateDTO) dto).getDeviceIds().containsAll(reachable)
+                        )
+                );
     }
 }
