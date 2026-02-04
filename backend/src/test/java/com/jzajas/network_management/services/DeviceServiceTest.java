@@ -4,6 +4,8 @@ import com.jzajas.network_management.dtos.PatchDeviceDTO;
 import com.jzajas.network_management.entities.Device;
 import com.jzajas.network_management.events.DeviceStateChangedEvent;
 import com.jzajas.network_management.events.EventPublisher;
+import com.jzajas.network_management.exceptions.DeviceNotFoundException;
+import com.jzajas.network_management.exceptions.InvalidDeviceStateException;
 import com.jzajas.network_management.repositories.DeviceRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,8 +29,6 @@ import static org.mockito.Mockito.when;
 class DeviceServiceTest {
     private static final PatchDeviceDTO ACTIVATING_PATCH_DTO = new PatchDeviceDTO(true);
     private static final String SUCCESSFUL_UPDATE_MESSAGE = "Update Successful";
-    private static final String NOT_FOUND_ERROR_MESSAGE = "Device Not Found";
-    private  static final String INVALID_STATUS_ERROR_MESSAGE = "Invalid Status";
     private static final long DEFAULT_ID = 1L;
     private static final String DEFAULT_NAME = "Lublin";
     private static final Device DEFAULT_DEACTIVATED_DEVICE = new Device(DEFAULT_ID, DEFAULT_NAME, false);
@@ -66,12 +66,11 @@ class DeviceServiceTest {
     void givenNonExistingDevice_whenPatchDevice_thenExceptionIsThrown() {
         when(deviceRepository.findById(DEFAULT_ID)).thenReturn(Optional.empty());
 
-        RuntimeException exception = assertThrows(
-                RuntimeException.class,
+        assertThrows(
+                DeviceNotFoundException.class,
                 () -> deviceService.patchDevice(DEFAULT_ID, ACTIVATING_PATCH_DTO)
         );
 
-        assertEquals(NOT_FOUND_ERROR_MESSAGE, exception.getMessage());
         verify(deviceRepository, never()).save(any());
         verify(eventPublisher, never()).publish(any());
     }
@@ -82,12 +81,11 @@ class DeviceServiceTest {
 
         when(deviceRepository.findById(DEFAULT_ID)).thenReturn(Optional.of(DEFAULT_DEACTIVATED_DEVICE));
 
-        RuntimeException exception = assertThrows(
-                RuntimeException.class,
+        assertThrows(
+                InvalidDeviceStateException.class,
                 () -> deviceService.patchDevice(DEFAULT_ID, dto)
         );
 
-        assertEquals(INVALID_STATUS_ERROR_MESSAGE, exception.getMessage());
         verify(deviceRepository, never()).save(any());
         verify(eventPublisher, never()).publish(any());
     }
