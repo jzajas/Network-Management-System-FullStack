@@ -1,6 +1,5 @@
 package com.jzajas.network_management.exceptions;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter

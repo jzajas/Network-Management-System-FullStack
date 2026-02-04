@@ -55,9 +55,10 @@ public class StartupDataLoader implements CommandLineRunner {
         List<Connection> connections = new ArrayList<>();
 
         for (ConnectionJson dto : topology.getConnections()) {
-            Connection connection = new Connection();
-            connection.setDeviceA(devicesById.get(dto.getFrom()));
-            connection.setDeviceB(devicesById.get(dto.getTo()));
+            Connection connection = new Connection(
+                    devicesById.get(dto.getFrom()),
+                    devicesById.get(dto.getTo())
+            );
             connections.add(connection);
         }
 

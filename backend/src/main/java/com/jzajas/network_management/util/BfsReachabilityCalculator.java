@@ -29,14 +29,8 @@ public class BfsReachabilityCalculator implements ReachabilityCalculator {
             Long current = queue.poll();
 
             for (Long neighbor : graph.getOrDefault(current, Set.of())) {
-
-                if (reachable.contains(neighbor)) {
-                    continue;
-                }
-
-                 if (!Boolean.TRUE.equals(deviceActiveMap.get(neighbor))) {
-                    continue;
-                }
+                if (reachable.contains(neighbor)) continue;
+                if (!Boolean.TRUE.equals(deviceActiveMap.get(neighbor))) continue;
 
                 reachable.add(neighbor);
                 queue.add(neighbor);

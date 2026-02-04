@@ -51,20 +51,16 @@ public class ReachabilityDeviceServiceImplementationTest {
         Device device1 = new Device(DEFAULT_ID_1, "A", true);
         Device device2 = new Device(DEFAULT_ID_2, "B", false);
         List<Device> devices = List.of(device1, device2);
-
         Connection connection = mock(Connection.class);
         List<Connection> connections = List.of(connection);
-
         Map<Long, Set<Long>> graph = Map.of(
                 DEFAULT_ID_1, Set.of(DEFAULT_ID_2),
                 DEFAULT_ID_2, Set.of(DEFAULT_ID_1)
         );
-
         Map<Long, Boolean> activeMap = Map.of(
                 DEFAULT_ID_1, true,
                 DEFAULT_ID_2, false
         );
-
         Set<Long> reachable = Set.of(DEFAULT_ID_1);
 
         when(deviceRepository.findAll()).thenReturn(devices);
@@ -90,10 +86,8 @@ public class ReachabilityDeviceServiceImplementationTest {
     void givenNoDevices_whenComputeReachableFrom_thenEmptyResultIsReturned() {
         when(deviceRepository.findAll()).thenReturn(List.of());
         when(connectionRepository.findAll()).thenReturn(List.of());
-
         when(graphBuilder.buildGraph(List.of(), List.of()))
                 .thenReturn(Map.of());
-
         when(reachabilityCalculator.calculateReachable(
                 eq(DEFAULT_ID_1),
                 eq(Map.of()),

@@ -81,7 +81,6 @@ public class ReachabilitySubscriptionServiceTest {
                 ),
                 any(String.class)
         );
-
         verify(sseEventPublisher).publish(
                 eq(subscription),
                 argThat(dto ->
@@ -91,7 +90,6 @@ public class ReachabilitySubscriptionServiceTest {
                 ),
                 any(String.class)
         );
-
         assertEquals(newReachable, subscription.getLastReachable());
     }
 

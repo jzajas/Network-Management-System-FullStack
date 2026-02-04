@@ -2,7 +2,6 @@ package com.jzajas.network_management.controllers;
 
 import com.jzajas.network_management.dtos.PatchDeviceDTO;
 import com.jzajas.network_management.services.DeviceService;
-import com.jzajas.network_management.services.DeviceServiceImplementation;
 import com.jzajas.network_management.services.SubscriptionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -30,13 +29,11 @@ public class DeviceController {
         return subscriptionService.subscribe(id);
     }
 
-
     @PatchMapping("/{id}")
     public ResponseEntity<String> patchDeviceById(
             @PathVariable Long id,
             @Valid @RequestBody PatchDeviceDTO dto
     ) {
-
         String message = deviceService.patchDevice(id, dto);
 
         return new ResponseEntity(message, HttpStatus.OK);
