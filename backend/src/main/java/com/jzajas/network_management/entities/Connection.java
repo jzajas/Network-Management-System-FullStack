@@ -28,7 +28,7 @@ public class Connection {
     @JoinColumn(name = "device_b_id")
     private Device deviceB;
 
-    public Connection(final Device deviceB, final Device deviceA) {
+    public Connection(Device deviceB, Device deviceA) {
         this.deviceB = deviceB;
         this.deviceA = deviceA;
     }
