@@ -24,7 +24,6 @@ public class BfsReachabilityCalculator implements ReachabilityCalculator {
 
         Queue<Long> queue = new ArrayDeque<>();
         queue.add(startDeviceId);
-        reachable.add(startDeviceId);
 
         while (!queue.isEmpty()) {
             Long current = queue.poll();
@@ -44,6 +43,7 @@ public class BfsReachabilityCalculator implements ReachabilityCalculator {
             }
         }
 
+        reachable.remove(startDeviceId);
         return reachable;
     }
 }

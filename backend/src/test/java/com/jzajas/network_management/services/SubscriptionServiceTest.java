@@ -82,7 +82,8 @@ public class SubscriptionServiceTest {
                                 dto instanceof InitialStateDTO
                                         && ((InitialStateDTO) dto).getType() == EventTypes.INITIAL_STATE
                                         && ((InitialStateDTO) dto).getDeviceIds().containsAll(reachable)
-                        )
+                        ),
+                        any(String.class)
                 );
     }
 }

@@ -7,14 +7,13 @@ import java.io.IOException;
 
 @Component
 public class SseEventPublisherImplementation implements SseEventPublisher {
-    private static final String EVENT_NAME = "Device-State-Change";
 
     @Override
-    public void publish(Subscription subscription, Object payload) {
+    public void publish(Subscription subscription, Object payload, String eventName) {
         try {
             subscription.getEmitter().send(
                     SseEmitter.event()
-                            .name(EVENT_NAME)
+                            .name(eventName)
                             .data(payload)
             );
         } catch (IOException e) {

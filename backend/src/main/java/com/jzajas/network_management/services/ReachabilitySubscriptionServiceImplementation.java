@@ -16,6 +16,8 @@ import java.util.Set;
 @Service
 @AllArgsConstructor
 public class ReachabilitySubscriptionServiceImplementation implements ReachabilitySubscriptionService{
+    private static final String REMOVED_DEVICE_EVENT_NAME = "Removed Device";
+    private static final String ADDED_DEVICE_EVENT_NAME = "Added Device";
 
     private final ReachabilityDeviceService reachabilityService;
     private final SubscriptionRegistry subscriptionRegistry;
@@ -40,14 +42,17 @@ public class ReachabilitySubscriptionServiceImplementation implements Reachabili
             delta.getRemoved().forEach(id ->
                     sseEventPublisher.publish(
                             subscription,
-                            new DeviceStateChangeDTO(EventTypes.REMOVED, id)
+                            new DeviceStateChangeDTO(EventTypes.REMOVED, id),
+                            REMOVED_DEVICE_EVENT_NAME
+
                     )
             );
 
             delta.getAdded().forEach(id ->
                     sseEventPublisher.publish(
                             subscription,
-                            new DeviceStateChangeDTO(EventTypes.ADDED, id)
+                            new DeviceStateChangeDTO(EventTypes.ADDED, id),
+                            ADDED_DEVICE_EVENT_NAME
                     )
             );
 
