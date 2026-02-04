@@ -52,15 +52,15 @@ public class GlobalRestControllerAdvice {
         );
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiErrorResponse> handleUnexpectedError(
-            Exception ex
-    ) {
-        return buildResponse(
-                HttpStatus.INTERNAL_SERVER_ERROR,
-                UNEXPECTED_ERROR_MESSAGE
-        );
-    }
+//    @ExceptionHandler(Exception.class)
+//    public ResponseEntity<ApiErrorResponse> handleUnexpectedError(
+//            Exception ex
+//    ) {
+//        return buildResponse(
+//                HttpStatus.INTERNAL_SERVER_ERROR,
+//                UNEXPECTED_ERROR_MESSAGE
+//        );
+//    }
 
     private ResponseEntity<ApiErrorResponse> buildResponse(
             HttpStatus status, String message
