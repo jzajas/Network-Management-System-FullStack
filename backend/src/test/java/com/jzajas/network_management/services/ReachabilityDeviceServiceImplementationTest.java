@@ -25,7 +25,11 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class ReachabilityServiceImplementationTest {
+public class ReachabilityDeviceServiceImplementationTest {
+    private static final Long DEFAULT_ID_1 = 1L;
+    private static final Long DEFAULT_ID_2 = 2L;
+    private static final Long DEFAULT_ID_3 = 3L;
+    private static final Long DEFAULT_ID_4 = 4L;
 
     @Mock
     private DeviceRepository deviceRepository;
@@ -40,38 +44,37 @@ public class ReachabilityServiceImplementationTest {
     private ReachabilityCalculator reachabilityCalculator;
 
     @InjectMocks
-    private ReachabilityServiceImplementation reachabilityService;
+    private ReachabilityDeviceServiceImplementation reachabilityService;
 
     @Test
     void givenDevicesAndConnectionsExist_whenComputeReachableFrom_thenGraphIsBuiltAndReachabilityCalculated() {
-        Long sourceDeviceId = 1L;
-        Device device1 = new Device(1L, "A", true);
-        Device device2 = new Device(2L, "B", false);
+        Device device1 = new Device(DEFAULT_ID_1, "A", true);
+        Device device2 = new Device(DEFAULT_ID_2, "B", false);
         List<Device> devices = List.of(device1, device2);
 
         Connection connection = mock(Connection.class);
         List<Connection> connections = List.of(connection);
 
         Map<Long, Set<Long>> graph = Map.of(
-                1L, Set.of(2L),
-                2L, Set.of(1L)
+                DEFAULT_ID_1, Set.of(DEFAULT_ID_2),
+                DEFAULT_ID_2, Set.of(DEFAULT_ID_1)
         );
 
         Map<Long, Boolean> activeMap = Map.of(
-                1L, true,
-                2L, false
+                DEFAULT_ID_1, true,
+                DEFAULT_ID_2, false
         );
 
-        Set<Long> reachable = Set.of(1L);
+        Set<Long> reachable = Set.of(DEFAULT_ID_1);
 
         when(deviceRepository.findAll()).thenReturn(devices);
         when(connectionRepository.findAll()).thenReturn(connections);
         when(graphBuilder.buildGraph(devices, connections)).thenReturn(graph);
         when(reachabilityCalculator.calculateReachable(
-                sourceDeviceId, graph, activeMap
+                DEFAULT_ID_1, graph, activeMap
         )).thenReturn(reachable);
 
-        Set<Long> result = reachabilityService.computeReachableFrom(sourceDeviceId);
+        Set<Long> result = reachabilityService.computeReachableFrom(DEFAULT_ID_1);
 
         assertEquals(reachable, result);
 
@@ -79,14 +82,12 @@ public class ReachabilityServiceImplementationTest {
         verify(connectionRepository).findAll();
         verify(graphBuilder).buildGraph(devices, connections);
         verify(reachabilityCalculator).calculateReachable(
-                sourceDeviceId, graph, activeMap
+                DEFAULT_ID_1, graph, activeMap
         );
     }
 
     @Test
     void givenNoDevices_whenComputeReachableFrom_thenEmptyResultIsReturned() {
-        Long sourceDeviceId = 1L;
-
         when(deviceRepository.findAll()).thenReturn(List.of());
         when(connectionRepository.findAll()).thenReturn(List.of());
 
@@ -94,30 +95,30 @@ public class ReachabilityServiceImplementationTest {
                 .thenReturn(Map.of());
 
         when(reachabilityCalculator.calculateReachable(
-                eq(sourceDeviceId),
+                eq(DEFAULT_ID_1),
                 eq(Map.of()),
                 eq(Map.of())
         )).thenReturn(Set.of());
 
-        Set<Long> result = reachabilityService.computeReachableFrom(sourceDeviceId);
+        Set<Long> result = reachabilityService.computeReachableFrom(DEFAULT_ID_1);
 
         assertEquals(Set.of(), result);
     }
 
     @Test
     void givenPreviousAndCurrentReachable_whenComputeDelta_thenAddedAndRemovedAreCorrect() {
-        Set<Long> previous = Set.of(1L, 2L, 3L);
-        Set<Long> current = Set.of(2L, 3L, 4L);
+        Set<Long> previous = Set.of(DEFAULT_ID_1, DEFAULT_ID_2, DEFAULT_ID_3);
+        Set<Long> current = Set.of(DEFAULT_ID_2, DEFAULT_ID_3, DEFAULT_ID_4);
 
         DeltaDevices delta = reachabilityService.computeDelta(previous, current);
 
-        assertEquals(Set.of(4L), delta.getAdded());
-        assertEquals(Set.of(1L), delta.getRemoved());
+        assertEquals(Set.of(DEFAULT_ID_4), delta.getAdded());
+        assertEquals(Set.of(DEFAULT_ID_1), delta.getRemoved());
     }
 
     @Test
     void givenIdenticalReachableSets_whenComputeDelta_thenDeltaIsEmpty() {
-        Set<Long> reachable = Set.of(1L, 2L);
+        Set<Long> reachable = Set.of(DEFAULT_ID_1, DEFAULT_ID_2);
 
         DeltaDevices delta = reachabilityService.computeDelta(reachable, reachable);
 
@@ -127,11 +128,11 @@ public class ReachabilityServiceImplementationTest {
     @Test
     void givenEmptyPrevious_whenComputeDelta_thenAllCurrentAreAdded() {
         Set<Long> previous = Set.of();
-        Set<Long> current = Set.of(1L, 2L);
+        Set<Long> current = Set.of(DEFAULT_ID_1, DEFAULT_ID_2);
 
         DeltaDevices delta = reachabilityService.computeDelta(previous, current);
 
-        assertEquals(Set.of(1L, 2L), delta.getAdded());
+        assertEquals(Set.of(DEFAULT_ID_1, DEFAULT_ID_2), delta.getAdded());
         assertEquals(Set.of(), delta.getRemoved());
     }
 }

@@ -24,12 +24,14 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class DeviceServiceTests {
+class DeviceServiceTest {
+    private static final PatchDeviceDTO ACTIVATING_PATCH_DTO = new PatchDeviceDTO(true);
     private static final String SUCCESSFUL_UPDATE_MESSAGE = "Update Successful";
     private static final String NOT_FOUND_ERROR_MESSAGE = "Device Not Found";
     private  static final String INVALID_STATUS_ERROR_MESSAGE = "Invalid Status";
     private static final long DEFAULT_ID = 1L;
     private static final String DEFAULT_NAME = "Lublin";
+    private static final Device DEFAULT_DEACTIVATED_DEVICE = new Device(DEFAULT_ID, DEFAULT_NAME, false);
 
     @Mock
     private DeviceRepository deviceRepository;
@@ -45,16 +47,14 @@ class DeviceServiceTests {
 
     @Test
     void givenExistingDeviceWithDifferentStatus_whenPatchDevice_thenDeviceIsUpdatedAndEventPublished() {
-        Device device = new Device(DEFAULT_ID, DEFAULT_NAME, false);
-        PatchDeviceDTO dto = new PatchDeviceDTO(true);
-        when(deviceRepository.findById(DEFAULT_ID)).thenReturn(Optional.of(device));
+        when(deviceRepository.findById(DEFAULT_ID)).thenReturn(Optional.of(DEFAULT_DEACTIVATED_DEVICE));
 
-        String result = deviceService.patchDevice(DEFAULT_ID, dto);
+        String result = deviceService.patchDevice(DEFAULT_ID, ACTIVATING_PATCH_DTO);
 
         assertEquals(SUCCESSFUL_UPDATE_MESSAGE, result);
-        assertTrue(device.isActive());
+        assertTrue(DEFAULT_DEACTIVATED_DEVICE.isActive());
 
-        verify(deviceRepository).save(device);
+        verify(deviceRepository).save(DEFAULT_DEACTIVATED_DEVICE);
         verify(eventPublisher).publish(eventCaptor.capture());
 
         DeviceStateChangedEvent event = eventCaptor.getValue();
@@ -64,13 +64,11 @@ class DeviceServiceTests {
 
     @Test
     void givenNonExistingDevice_whenPatchDevice_thenExceptionIsThrown() {
-        PatchDeviceDTO dto = new PatchDeviceDTO(true);
-
         when(deviceRepository.findById(DEFAULT_ID)).thenReturn(Optional.empty());
 
         RuntimeException exception = assertThrows(
                 RuntimeException.class,
-                () -> deviceService.patchDevice(DEFAULT_ID, dto)
+                () -> deviceService.patchDevice(DEFAULT_ID, ACTIVATING_PATCH_DTO)
         );
 
         assertEquals(NOT_FOUND_ERROR_MESSAGE, exception.getMessage());
@@ -80,10 +78,9 @@ class DeviceServiceTests {
 
     @Test
     void givenDeviceWithSameStatus_whenPatchDevice_thenExceptionIsThrown() {
-        Device device = new Device(DEFAULT_ID, DEFAULT_NAME, false);
         PatchDeviceDTO dto = new PatchDeviceDTO(false);
 
-        when(deviceRepository.findById(DEFAULT_ID)).thenReturn(Optional.of(device));
+        when(deviceRepository.findById(DEFAULT_ID)).thenReturn(Optional.of(DEFAULT_DEACTIVATED_DEVICE));
 
         RuntimeException exception = assertThrows(
                 RuntimeException.class,
