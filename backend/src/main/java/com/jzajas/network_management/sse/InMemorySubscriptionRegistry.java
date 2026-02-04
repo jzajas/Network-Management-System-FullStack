@@ -3,7 +3,6 @@ package com.jzajas.network_management.sse;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -24,11 +23,6 @@ public class InMemorySubscriptionRegistry implements SubscriptionRegistry {
     @Override
     public void removeSubscription(UUID subscriptionId) {
         subscriptions.remove(subscriptionId);
-    }
-
-    @Override
-    public Optional<Subscription> getSubscription(UUID subscriptionId) {
-        return Optional.ofNullable(subscriptions.get(subscriptionId));
     }
 
     @Override

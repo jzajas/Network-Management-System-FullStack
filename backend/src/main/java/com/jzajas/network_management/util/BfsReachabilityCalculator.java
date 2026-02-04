@@ -24,26 +24,20 @@ public class BfsReachabilityCalculator implements ReachabilityCalculator {
 
         Queue<Long> queue = new ArrayDeque<>();
         queue.add(startDeviceId);
-        reachable.add(startDeviceId);
 
         while (!queue.isEmpty()) {
             Long current = queue.poll();
 
             for (Long neighbor : graph.getOrDefault(current, Set.of())) {
-
-                if (reachable.contains(neighbor)) {
-                    continue;
-                }
-
-                 if (!Boolean.TRUE.equals(deviceActiveMap.get(neighbor))) {
-                    continue;
-                }
+                if (reachable.contains(neighbor)) continue;
+                if (!Boolean.TRUE.equals(deviceActiveMap.get(neighbor))) continue;
 
                 reachable.add(neighbor);
                 queue.add(neighbor);
             }
         }
 
+        reachable.remove(startDeviceId);
         return reachable;
     }
 }

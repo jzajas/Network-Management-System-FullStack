@@ -8,10 +8,12 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "connections")
 @Getter
+@NoArgsConstructor
 public class Connection {
 
     @Id
@@ -25,4 +27,9 @@ public class Connection {
     @ManyToOne(optional = false)
     @JoinColumn(name = "device_b_id")
     private Device deviceB;
+
+    public Connection(Device deviceB, Device deviceA) {
+        this.deviceB = deviceB;
+        this.deviceA = deviceA;
+    }
 }

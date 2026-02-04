@@ -32,6 +32,7 @@ public class ReachabilitySubscriptionServiceTest {
     private static final Long DEFAULT_ID_2 = 2L;
     private static final Long DEFAULT_ID_3 = 3L;
     private static final Long DEVICE_STATE_CHANGE_DEFAULT_ID = 5L;
+
     @Mock
     private ReachabilityDeviceService reachabilityService;
 
@@ -77,18 +78,18 @@ public class ReachabilitySubscriptionServiceTest {
                         dto instanceof DeviceStateChangeDTO
                                 && ((DeviceStateChangeDTO) dto).getType() == EventTypes.ADDED
                                 && ((DeviceStateChangeDTO) dto).getDeviceId().equals(DEFAULT_ID_3)
-                )
+                ),
+                any(String.class)
         );
-
         verify(sseEventPublisher).publish(
                 eq(subscription),
                 argThat(dto ->
                         dto instanceof DeviceStateChangeDTO
                                 && ((DeviceStateChangeDTO) dto).getType() == EventTypes.REMOVED
                                 && ((DeviceStateChangeDTO) dto).getDeviceId().equals(DEFAULT_ID_1)
-                )
+                ),
+                any(String.class)
         );
-
         assertEquals(newReachable, subscription.getLastReachable());
     }
 
@@ -136,6 +137,6 @@ public class ReachabilitySubscriptionServiceTest {
         );
 
         verify(sseEventPublisher, times(2))
-                .publish(any(Subscription.class), any(DeviceStateChangeDTO.class));
+                .publish(any(Subscription.class), any(DeviceStateChangeDTO.class), any(String.class));
     }
 }

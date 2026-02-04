@@ -7,8 +7,8 @@ import lombok.Getter;
 public class DeviceStateChangeDTO extends BasicStateDTO{
     private Long deviceId;
 
-    public DeviceStateChangeDTO(final EventTypes type, final Long deviceID) {
+    public DeviceStateChangeDTO(EventTypes type, Long deviceID) {
         super(type);
-        this.deviceId = deviceID;
+        deviceId = deviceID;
     }
 }

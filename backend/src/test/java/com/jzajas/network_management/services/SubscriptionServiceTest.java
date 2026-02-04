@@ -53,10 +53,8 @@ public class SubscriptionServiceTest {
 
         when(reachabilityDeviceService.computeReachableFrom(DEFAULT_ID_1))
                 .thenReturn(reachable);
-
         when(subscriptionRegistry.addSubscription(any(Subscription.class)))
                 .thenReturn(SUBSCRIPTION_ID);
-
         when(sseEmitterFactory.create(
                 eq(SUBSCRIPTION_ID),
                 any()
@@ -68,13 +66,10 @@ public class SubscriptionServiceTest {
 
         verify(reachabilityDeviceService)
                 .computeReachableFrom(DEFAULT_ID_1);
-
         verify(subscriptionRegistry)
                 .addSubscription(any(Subscription.class));
-
         verify(sseEmitterFactory)
                 .create(eq(SUBSCRIPTION_ID), any());
-
         verify(sseEventPublisher)
                 .publish(
                         any(Subscription.class),
@@ -82,7 +77,8 @@ public class SubscriptionServiceTest {
                                 dto instanceof InitialStateDTO
                                         && ((InitialStateDTO) dto).getType() == EventTypes.INITIAL_STATE
                                         && ((InitialStateDTO) dto).getDeviceIds().containsAll(reachable)
-                        )
+                        ),
+                        any(String.class)
                 );
     }
 }

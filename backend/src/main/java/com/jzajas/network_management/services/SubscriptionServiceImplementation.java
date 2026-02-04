@@ -17,6 +17,8 @@ import java.util.UUID;
 @Service
 @AllArgsConstructor
 public class SubscriptionServiceImplementation implements SubscriptionService {
+    private static final String INITIAL_STATE_EVENT_NAME = "Initial State";
+
     private final ReachabilityDeviceService reachabilityDeviceService;
     private final SubscriptionRegistry subscriptionRegistry;
     private final SseEmitterFactory sseEmitterFactory;
@@ -50,7 +52,8 @@ public class SubscriptionServiceImplementation implements SubscriptionService {
                 new InitialStateDTO(
                         EventTypes.INITIAL_STATE,
                         List.copyOf(initialReachable)
-                )
+                ),
+                INITIAL_STATE_EVENT_NAME
         );
 
         return emitter;
