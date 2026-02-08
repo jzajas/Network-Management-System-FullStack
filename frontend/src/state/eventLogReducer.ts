@@ -1,5 +1,5 @@
 import type { EventLogEntry } from "../models/EventLogEntry";
-import type { EventLogAction } from "./eventLogActions";
+import type { EventLogAction } from "./EventLogAction";
 
 export interface EventLogState {
   events: EventLogEntry[];
@@ -13,7 +13,7 @@ const MAX_EVENTS = 200;
 
 export function eventLogReducer(
   state: EventLogState,
-  action: EventLogAction
+  action: EventLogAction,
 ): EventLogState {
   switch (action.type) {
     case "ADD_EVENT": {

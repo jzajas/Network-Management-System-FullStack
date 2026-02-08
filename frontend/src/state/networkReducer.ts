@@ -1,18 +1,18 @@
-import type { NetworkSnapshot } from "../models/NetworkSnapshot"; 
-import type { NetworkAction } from "./networkActions";
+import type { NetworkAction } from "./NetworkAction";
+import type { NetworkState } from "./networkStore";
 
-export interface NetworkState {
-  snapshot: NetworkSnapshot | null;
+export interface NetworkReducerState {
+  snapshot: NetworkState | null;
 }
 
-export const initialNetworkState: NetworkState = {
+export const initialNetworkState: NetworkReducerState = {
   snapshot: null,
 };
 
 export function networkReducer(
-  state: NetworkState,
-  action: NetworkAction
-): NetworkState {
+  state: NetworkReducerState,
+  action: NetworkAction,
+): NetworkReducerState {
   switch (action.type) {
     case "SET_SNAPSHOT":
       return {
@@ -28,7 +28,7 @@ export function networkReducer(
           nodes: state.snapshot.nodes.map((node) =>
             node.id === action.payload.nodeId
               ? { ...node, visible: false }
-              : node
+              : node,
           ),
         },
       };
@@ -42,7 +42,7 @@ export function networkReducer(
           nodes: state.snapshot.nodes.map((node) =>
             node.id === action.payload.nodeId
               ? { ...node, visible: true }
-              : node
+              : node,
           ),
         },
       };
