@@ -1,7 +1,13 @@
 import { createContext, useContext, useReducer } from "react";
 import type { ReactNode, Dispatch } from "react";
-import { networkReducer, initialNetworkState, type NetworkState } from "./networkReducer";
-import type { NetworkAction } from "./networkActions";
+import type { NetworkAction } from "./NetworkAction";
+import {
+  type NetworkState,
+  networkReducer,
+  initialNetworkState,
+} from "./networkReducer";
+
+const erorMessage = "useNetwork must be used within a NetworkProvider";
 
 type NetworkContextValue = {
   state: NetworkState;
@@ -15,10 +21,7 @@ type NetworkProviderProps = {
 };
 
 export function NetworkProvider({ children }: NetworkProviderProps) {
-  const [state, dispatch] = useReducer(
-    networkReducer,
-    initialNetworkState
-  );
+  const [state, dispatch] = useReducer(networkReducer, initialNetworkState);
 
   return (
     <NetworkContext.Provider value={{ state, dispatch }}>
@@ -31,9 +34,7 @@ export function NetworkProvider({ children }: NetworkProviderProps) {
 export function useNetwork() {
   const context = useContext(NetworkContext);
   if (context === null) {
-    throw new Error(
-      "useNetwork must be used within a NetworkProvider"
-    );
+    throw new Error(erorMessage);
   }
   return context;
 }
