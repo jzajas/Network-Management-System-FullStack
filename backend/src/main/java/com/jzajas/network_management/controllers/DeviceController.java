@@ -6,6 +6,7 @@ import com.jzajas.network_management.services.SubscriptionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -24,12 +25,12 @@ public class DeviceController {
     private final SubscriptionService subscriptionService;
     private final DeviceService deviceService;
 
-    @GetMapping("/{id}/reachable-devices")
+    @GetMapping(value = "/{id}/reachable-devices", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter streamReachableDevices(@PathVariable Long id) {
         return subscriptionService.subscribe(id);
     }
 
-    @PatchMapping("/{id}")
+    @PatchMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> patchDeviceById(
             @PathVariable Long id,
             @Valid @RequestBody PatchDeviceDTO dto

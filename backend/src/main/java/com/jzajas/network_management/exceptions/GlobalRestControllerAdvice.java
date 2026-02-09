@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.async.AsyncRequestNotUsableException;
 
 import java.time.Instant;
 
@@ -55,11 +56,25 @@ public class GlobalRestControllerAdvice {
         );
     }
 
+    @ExceptionHandler(AsyncRequestNotUsableException.class)
+    public void handleAsyncException(AsyncRequestNotUsableException ex) {
+        log.debug("SSE client disconnected: {}", ex.getMessage());
+    }
+
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<ApiErrorResponse> handleIllegalState(IllegalStateException ex) {
+        if (ex.getMessage() != null && ex.getMessage().contains("Failed to send")) {
+            log.debug("SSE send failed: {}", ex.getMessage());
+            return null;
+        }
+        return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiErrorResponse> handleUnexpectedError(
             Exception ex
     ) {
-        log.error(String.valueOf(ex));
+        log.error("Exception caught: ", ex);
         return buildResponse(
                 HttpStatus.INTERNAL_SERVER_ERROR,
                 UNEXPECTED_ERROR_MESSAGE
