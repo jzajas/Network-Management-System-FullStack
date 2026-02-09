@@ -4,6 +4,8 @@ import type { SseEventDTO } from "../dtos/SseEventDTO";
 import { eventLogStore } from "../state/eventLogStore";
 import { networkStore } from "../state/networkStore";
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 export class NetworkSseClient {
   private source: EventSource | null = null;
   private readonly rootDeviceId: number;
@@ -18,8 +20,9 @@ export class NetworkSseClient {
     }
 
     this.source = new EventSource(
-      `/devices/${this.rootDeviceId}/reachable-devices`,
+      `${API_BASE_URL}/devices/${this.rootDeviceId}/reachable-devices`,
     );
+
 
     this.source.onmessage = (event) => {
       this.handleMessage(event.data);
