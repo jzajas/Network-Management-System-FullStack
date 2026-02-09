@@ -1,0 +1,131 @@
+import * as d3 from "d3";
+import { useEffect, useRef, useState } from "react";
+import { drawNetwork, RADIUS } from "./drawNetwork";
+import type { D3Data, D3Node, D3Link } from "./Types";
+
+// type NetworkDiagramProps = {
+//   width: number;
+//   height: number;
+//   data: D3Data;
+// };
+
+// export function NetworkDiagram({ width, height, data }: NetworkDiagramProps) {
+//   const nodes: D3Node[] = data.nodes.map((d) => ({ ...d }));
+//   const links: D3Link[] = data.links.map((d) => ({ ...d }));
+
+//   const canvasRef = useRef<HTMLCanvasElement>(null);
+
+//   useEffect(() => {
+//     const canvas = canvasRef.current;
+//     const context = canvas?.getContext("2d");
+//     if (!context) return;
+
+//     const simulation = d3
+//       .forceSimulation(nodes)
+//       .force(
+//         "link",
+//         d3.forceLink<D3Node, D3Link>(links).id((d : D3Node) => d.id),
+//       )
+//       .force("collide", d3.forceCollide().radius(RADIUS * 2))
+//       .force("charge", d3.forceManyBody().strength(-80))
+//       .force("center", d3.forceCenter(width / 2, height / 2))
+//       .on("tick", () => {
+//         drawNetwork(context, width, height, nodes, links);
+//       });
+
+//     return () => {
+//       simulation.stop();
+//     };
+//   }, [width, height, data]);
+
+//   return (
+//     <canvas
+//       ref={canvasRef}
+//       width={width}
+//       height={height}
+//       style={{ width, height }}
+//     />
+//   );
+// }
+
+export function NetworkDiagram({ data }: { data: D3Data }) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+
+    const observer = new ResizeObserver(() => {
+      setDimensions({
+        width: containerRef.current!.clientWidth,
+        height: containerRef.current!.clientHeight,
+      });
+    });
+
+    observer.observe(containerRef.current);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const context = canvas.getContext("2d");
+    if (!context) return;
+    if (dimensions.width === 0 || dimensions.height === 0) return;
+
+    // ✅ DEBUG: Check the original data prop
+    console.log("Original data.nodes:", data.nodes.length);
+    console.log("Original data.links:", data.links.length);
+    console.log("Links:", data.links);
+
+    // Copy nodes/links for simulation
+    const nodes: D3Node[] = data.nodes.map((d) => ({ ...d }));
+    const links: D3Link[] = data.links.map((d) => ({ ...d }));
+
+    console.log("Copied links:", links.length);
+
+    const simulation = d3
+      .forceSimulation<D3Node>(nodes)
+      .force(
+        "link",
+        d3.forceLink<D3Node, D3Link>(links).id((d: D3Node) => d.id),
+      )
+      .force("collide", d3.forceCollide().radius(RADIUS * 2))
+      .force("charge", d3.forceManyBody().strength(-50))
+      .force(
+        "center",
+        d3.forceCenter(dimensions.width / 2, dimensions.height / 2),
+      )
+      .on("tick", () => {
+        nodes.forEach((node) => {
+          node.x = Math.max(
+            RADIUS,
+            Math.min(dimensions.width - RADIUS, node.x!),
+          );
+          node.y = Math.max(
+            RADIUS,
+            Math.min(dimensions.height - RADIUS, node.y!),
+          );
+        });
+
+        drawNetwork(context, dimensions.width, dimensions.height, nodes, links);
+      });
+
+    return () => {
+      simulation.stop();
+      return;
+    };
+  }, [data, dimensions.width, dimensions.height]);
+
+  return (
+    <div ref={containerRef} className="w-full h-full">
+      <canvas
+        ref={canvasRef}
+        width={dimensions.width}
+        height={dimensions.height}
+        style={{ width: "100%", height: "100%" }}
+      />
+    </div>
+  );
+}

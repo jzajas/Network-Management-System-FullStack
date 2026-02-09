@@ -56,10 +56,15 @@ export class NetworkSseClient {
   private handleInitialState(data: {
     type: "INITIAL_STATE";
     deviceIds: number[];
+    edges?: Array<{ from: number; to: number }>;
   }) {
     this.networkDispatch?.({
       type: "INITIAL_STATE_RECEIVED",
-      payload: { rootDeviceId: this.rootDeviceId!, deviceIds: data.deviceIds },
+      payload: {
+        rootDeviceId: this.rootDeviceId!,
+        deviceIds: data.deviceIds,
+        edges: data.edges || [],
+      },
     });
 
     this.log("SSE_UPDATE", JSON.stringify(data, null, 2));

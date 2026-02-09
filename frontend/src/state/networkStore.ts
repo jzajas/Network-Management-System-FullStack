@@ -40,7 +40,7 @@ class NetworkStore {
             id,
             visible: true,
           })),
-          edges: [],
+          edges: action.payload.edges,
         };
 
       case "DEVICE_STATE_CHANGED":

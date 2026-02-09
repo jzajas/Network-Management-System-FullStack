@@ -1,7 +1,12 @@
-import AppLayout from "./layout/AppLayout"
+import AppLayout from "./layout/AppLayout";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-function App() {
-  return <AppLayout />
+export default function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/devices/:deviceId" element={<AppLayout />} />
+      </Routes>
+    </BrowserRouter>
+  );
 }
-
-export default App
