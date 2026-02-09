@@ -1,7 +1,11 @@
-import AppLayout from "./layout/AppLayout"
+import { Navigate, Route, Routes } from "react-router-dom";
+import AppLayout from "./layout/AppLayout";
 
-function App() {
-  return <AppLayout />
+export default function App() {
+  return (
+    <Routes>
+      <Route path="/" element={<Navigate to="/devices/0" replace />} />
+      <Route path="/devices/:id" element={<AppLayout />} />
+    </Routes>
+  );
 }
-
-export default App
