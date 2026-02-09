@@ -1,31 +1,37 @@
 import { useEffect } from "react";
+import { useParams } from "react-router-dom";
 import { useEventLog } from "../hooks/useEventLog";
 import { NetworkSseClient } from "../sse/NetworkSseClient";
 import { eventLogStore } from "../state/eventLogStore";
 import { networkStore } from "../state/networkStore";
 
 export default function AppLayout() {
+  const { id } = useParams<{ id: string }>();
+
+  const rootDeviceId = Number(id);
   const events = useEventLog();
 
   useEffect(() => {
-    const rootDeviceId = 1;
+    if (Number.isNaN(rootDeviceId)) return;
 
     const sseClient = new NetworkSseClient();
+
     sseClient.connect(
       rootDeviceId,
       networkStore.dispatch.bind(networkStore),
       eventLogStore.dispatch.bind(eventLogStore),
     );
+
     return () => {
       sseClient.disconnect();
     };
-  }, []);
+  }, [rootDeviceId]);
 
   return (
     <div className="h-screen w-screen bg-slate-950 text-slate-200 flex">
       <main className="flex-1 relative flex items-center justify-center border-r border-slate-800">
         <div className="absolute top-4 left-4 text-sm text-slate-400">
-          Network Topology
+          Network Topology – Root device {rootDeviceId}
         </div>
         <div className="flex items-center justify-center text-slate-600">
           <span>Graph will render here</span>
