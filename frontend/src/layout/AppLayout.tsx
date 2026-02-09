@@ -27,7 +27,6 @@ export default function AppLayout() {
         <div className="absolute top-4 left-4 text-sm text-slate-400">
           Network Topology
         </div>
-
         <div className="flex items-center justify-center text-slate-600">
           <span>Graph will render here</span>
         </div>
@@ -37,7 +36,6 @@ export default function AppLayout() {
         <header className="h-14 px-4 flex items-center border-b border-slate-800">
           <h2 className="text-sm font-semibold tracking-wide">Event Feed</h2>
         </header>
-
         <section className="flex-1 overflow-y-auto p-4 space-y-3 text-sm font-mono">
           {events.length === 0 ? (
             <div className="text-slate-500">Waiting for events…</div>
