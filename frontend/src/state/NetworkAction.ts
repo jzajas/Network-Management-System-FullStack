@@ -1,7 +1,15 @@
-import type { NetworkState } from "../models/NetworkState";
-
 export type NetworkAction =
-  | { type: "SET_SNAPSHOT"; payload: NetworkState }
-  | { type: "HIDE_NODE"; payload: { nodeId: number } }
-  | { type: "SHOW_NODE"; payload: { nodeId: number } }
-  | { type: "CLEAR" };
+  | {
+      type: "INITIAL_STATE_RECEIVED";
+      payload: {
+        rootDeviceId: number;
+        deviceIds: number[];
+      };
+    }
+  | {
+      type: "DEVICE_STATE_CHANGED";
+      payload: {
+        deviceId: number;
+        visible: boolean;
+      };
+    };

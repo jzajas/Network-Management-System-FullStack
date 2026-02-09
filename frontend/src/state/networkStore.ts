@@ -1,26 +1,5 @@
-import type { NetworkEdge } from "../models/NetworkEdge";
-import type { NetworkNode } from "../models/NetworkNode";
-
-export interface NetworkState {
-  rootDeviceId: number | null;
-  nodes: NetworkNode[];
-  edges: NetworkEdge[];
-}
-
-type NetworkAction =
-  | {
-      type: "INITIAL_STATE_RECEIVED";
-      payload: {
-        rootDeviceId: number;
-        deviceIds: number[];
-      };
-    }
-  | {
-      type: "DEVICE_STATE_CHANGED";
-      payload: {
-        deviceId: number;
-      };
-    };
+import type { NetworkState } from "../models/NetworkState";
+import type { NetworkAction } from "./NetworkAction";
 
 type Listener = (state: NetworkState) => void;
 

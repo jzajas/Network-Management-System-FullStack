@@ -1,102 +1,101 @@
-import type { DeviceStateChangeDTO } from "../dtos/DeviceStateChangeDTO";
-import type { InitialStateDTO } from "../dtos/InitialStateDTO";
-import type { SseEventDTO } from "../dtos/SseEventDTO";
-import { eventLogStore } from "../state/eventLogStore";
-import { networkStore } from "../state/networkStore";
+import type { EventLogEntry, EventType } from "../models/EventLogEntry";
+import type { EventLogAction } from "../state/EventLogAction";
+import type { NetworkAction } from "../state/NetworkAction";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export class NetworkSseClient {
-  private source: EventSource | null = null;
-  private readonly rootDeviceId: number;
+  private eventSource?: EventSource;
 
-  constructor(rootDeviceId: number) {
+  private networkDispatch?: React.Dispatch<NetworkAction>;
+  private eventLogDispatch?: React.Dispatch<EventLogAction>;
+  private rootDeviceId?: number;
+
+  connect(
+    rootDeviceId: number,
+    networkDispatch: React.Dispatch<NetworkAction>,
+    eventLogDispatch: React.Dispatch<EventLogAction>,
+  ) {
     this.rootDeviceId = rootDeviceId;
-  }
+    this.networkDispatch = networkDispatch;
+    this.eventLogDispatch = eventLogDispatch;
 
-  connect() {
-    if (this.source) {
-      return;
-    }
-
-    this.source = new EventSource(
-      `${API_BASE_URL}/devices/${this.rootDeviceId}/reachable-devices`,
+    this.eventSource = new EventSource(
+      `${API_BASE_URL}/devices/${rootDeviceId}/reachable-devices`,
     );
 
-
-    this.source.onmessage = (event) => {
-      this.handleMessage(event.data);
-    };
-
-    this.source.onerror = () => {
-      this.log("SSE connection error");
-    };
-
-    this.log("SSE connected");
+    this.eventSource.onopen = (event) => this.handleOpen(event);
+    this.eventSource.addEventListener("Initial State", (event) =>
+      this.handleInitialState(JSON.parse((event as MessageEvent).data)),
+    );
+    this.eventSource.addEventListener("Added Device", (event) =>
+      this.handleAddedDevice(JSON.parse((event as MessageEvent).data)),
+    );
+    this.eventSource.addEventListener("Removed Device", (event) =>
+      this.handleRemovedDevice(JSON.parse((event as MessageEvent).data)),
+    );
+    this.eventSource.onerror = (event) => this.handleError(event);
   }
 
   disconnect() {
-    this.source?.close();
-    this.source = null;
-    this.log("SSE disconnected");
+    this.eventSource?.close();
+    this.eventSource = undefined;
   }
 
-  private handleMessage(rawData: string) {
-    let dto: SseEventDTO;
-
-    try {
-      dto = JSON.parse(rawData);
-    } catch {
-      this.log("Failed to parse SSE message");
-      return;
-    }
-
-    switch (dto.type) {
-      case "INITIAL_STATE":
-        this.handleInitialState(dto);
-        break;
-
-      case "DEVICE_STATE_CHANGE":
-        this.handleDeviceStateChange(dto);
-        break;
-
-      default:
-        this.log(`Unknown SSE event type`);
-    }
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  private handleOpen(_: Event) {
+    this.log("CONNECTION_STATUS", "SSE connected");
   }
 
-  private handleInitialState(dto: InitialStateDTO) {
-    networkStore.dispatch({
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  private handleError(_: Event) {
+    this.log("CONNECTION_STATUS", "SSE disconnected");
+    this.disconnect();
+  }
+
+  private handleInitialState(data: {
+    type: "INITIAL_STATE";
+    deviceIds: number[];
+  }) {
+    this.networkDispatch?.({
       type: "INITIAL_STATE_RECEIVED",
-      payload: {
-        rootDeviceId: this.rootDeviceId,
-        deviceIds: dto.deviceIds,
-      },
+      payload: { rootDeviceId: this.rootDeviceId!, deviceIds: data.deviceIds },
     });
 
-    this.log(`Initial state received (${dto.deviceIds.length} devices)`);
+    this.log("SSE_UPDATE", JSON.stringify(data, null, 2));
   }
 
-  private handleDeviceStateChange(dto: DeviceStateChangeDTO) {
-    networkStore.dispatch({
+  private handleAddedDevice(data: { type: "ADDED"; deviceId: number }) {
+    this.networkDispatch?.({
       type: "DEVICE_STATE_CHANGED",
-      payload: {
-        deviceId: dto.deviceId,
-      },
+      payload: { deviceId: data.deviceId, visible: true },
     });
 
-    this.log(`Device ${dto.deviceId} state changed`);
+    this.log("SSE_UPDATE", JSON.stringify(data, null, 2));
   }
 
-  private log(message: string) {
-    eventLogStore.dispatch({
+  private handleRemovedDevice(data: { type: "REMOVED"; deviceId: number }) {
+    this.networkDispatch?.({
+      type: "DEVICE_STATE_CHANGED",
+      payload: { deviceId: data.deviceId, visible: false },
+    });
+
+    this.log("SSE_UPDATE", JSON.stringify(data, null, 2));
+  }
+
+  private log(type: EventType, message: string) {
+    if (!this.eventLogDispatch) return;
+
+    const entry: EventLogEntry = {
+      id: crypto.randomUUID(),
+      timestamp: Date.now(),
+      type,
+      message,
+    };
+
+    this.eventLogDispatch({
       type: "ADD_EVENT",
-      payload: {
-        id: crypto.randomUUID(),
-        timestamp: Date.now(),
-        type: "SSE_UPDATE",
-        message,
-      },
+      payload: entry,
     });
   }
 }
