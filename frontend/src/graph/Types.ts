@@ -1,18 +1,8 @@
 export type GraphNodeGroup = "root" | "reachable" | "disabled";
 
-export type GraphNode = {
-  id: number;
-  group: "root" | "reachable" | "disabled";
-};
-
-export type GraphLink = {
-  source: number;
-  target: number;
-};
-
 export interface D3Node {
   id: number;
-  group: "root" | "reachable" | "disabled";
+  group: GraphNodeGroup;
   x?: number;
   y?: number;
 }

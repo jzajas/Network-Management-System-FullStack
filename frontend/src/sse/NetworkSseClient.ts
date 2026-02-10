@@ -39,7 +39,6 @@ export class NetworkSseClient {
       `${API_BASE_URL}/devices/${rootDeviceId}/reachable-devices`,
     );
 
-    this.eventSource.onopen = (event) => this.handleOpen(event);
     this.eventSource.addEventListener("Initial State", (event) =>
       this.handleInitialState(JSON.parse((event as MessageEvent).data)),
     );
@@ -66,11 +65,6 @@ export class NetworkSseClient {
   disconnect() {
     this.eventSource?.close();
     this.eventSource = undefined;
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  private handleOpen(_: Event) {
-    // this.log("CONNECTION_STATUS", "SSE connected");
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

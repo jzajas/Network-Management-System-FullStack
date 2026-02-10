@@ -3,51 +3,6 @@ import { useEffect, useRef, useState } from "react";
 import { drawNetwork, RADIUS } from "./drawNetwork";
 import type { D3Data, D3Node, D3Link } from "./Types";
 
-// type NetworkDiagramProps = {
-//   width: number;
-//   height: number;
-//   data: D3Data;
-// };
-
-// export function NetworkDiagram({ width, height, data }: NetworkDiagramProps) {
-//   const nodes: D3Node[] = data.nodes.map((d) => ({ ...d }));
-//   const links: D3Link[] = data.links.map((d) => ({ ...d }));
-
-//   const canvasRef = useRef<HTMLCanvasElement>(null);
-
-//   useEffect(() => {
-//     const canvas = canvasRef.current;
-//     const context = canvas?.getContext("2d");
-//     if (!context) return;
-
-//     const simulation = d3
-//       .forceSimulation(nodes)
-//       .force(
-//         "link",
-//         d3.forceLink<D3Node, D3Link>(links).id((d : D3Node) => d.id),
-//       )
-//       .force("collide", d3.forceCollide().radius(RADIUS * 2))
-//       .force("charge", d3.forceManyBody().strength(-80))
-//       .force("center", d3.forceCenter(width / 2, height / 2))
-//       .on("tick", () => {
-//         drawNetwork(context, width, height, nodes, links);
-//       });
-
-//     return () => {
-//       simulation.stop();
-//     };
-//   }, [width, height, data]);
-
-//   return (
-//     <canvas
-//       ref={canvasRef}
-//       width={width}
-//       height={height}
-//       style={{ width, height }}
-//     />
-//   );
-// }
-
 export function NetworkDiagram({ data }: { data: D3Data }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);

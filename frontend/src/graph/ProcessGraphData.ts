@@ -1,10 +1,10 @@
 import { useNetworkState } from "../hooks/useNetworkState";
-import type { GraphNode, GraphLink } from "./Types";
+import type { D3Data, D3Node, D3Link } from "./Types";
 
-export function useGraphData(rootDeviceId: number | null) {
+export function useGraphData(rootDeviceId: number | null): D3Data {
   const network = useNetworkState();
 
-  const nodes: GraphNode[] = network.nodes.map((node) => ({
+  const nodes: D3Node[] = network.nodes.map((node) => ({
     id: node.id,
     group:
       node.id === rootDeviceId
@@ -14,7 +14,7 @@ export function useGraphData(rootDeviceId: number | null) {
           : "disabled",
   }));
 
-  const links: GraphLink[] = network.edges.map((edge) => ({
+  const links: D3Link[] = network.edges.map((edge) => ({
     source: edge.from,
     target: edge.to,
   }));

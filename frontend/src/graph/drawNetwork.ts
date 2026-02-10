@@ -1,6 +1,6 @@
 import type { D3Node, D3Link } from "./Types";
 
-export const RADIUS = 6;
+export const RADIUS = 10;
 
 export function drawNetwork(
   context: CanvasRenderingContext2D,
@@ -24,8 +24,8 @@ export function drawNetwork(
     const bothEnabled =
       source.group !== "disabled" && target.group !== "disabled";
 
-    context.strokeStyle = bothEnabled ? "#f2ff00" : "#333333"; // Dim color for disabled
-    context.globalAlpha = bothEnabled ? 1.0 : 0.2; // Lower opacity for disabled
+    context.strokeStyle = bothEnabled ? "#f2ff00" : "#333333";
+    context.globalAlpha = bothEnabled ? 1.0 : 0.2;
     context.lineWidth = bothEnabled ? 2 : 1;
 
     context.beginPath();
