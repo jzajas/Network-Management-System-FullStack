@@ -11,21 +11,22 @@ export function drawNetwork(
 ) {
   context.clearRect(0, 0, width, height);
 
-  console.log("Links count:", links.length);
-  console.log("First link:", links[0]);
-
   context.strokeStyle = "#f2ff00";
   context.lineWidth = 1;
   links.forEach((link) => {
     const source = link.source as D3Node;
     const target = link.target as D3Node;
 
-    console.log("Link source:", source, "target:", target);
-
     if (!source || !target) {
-      console.log("Missing source or target!");
       return;
     }
+
+    const bothEnabled =
+      source.group !== "disabled" && target.group !== "disabled";
+
+    context.strokeStyle = bothEnabled ? "#f2ff00" : "#333333"; // Dim color for disabled
+    context.globalAlpha = bothEnabled ? 1.0 : 0.2; // Lower opacity for disabled
+    context.lineWidth = bothEnabled ? 2 : 1;
 
     context.beginPath();
     context.moveTo(source.x!, source.y!);
@@ -34,6 +35,8 @@ export function drawNetwork(
   });
 
   context.strokeStyle = "#e65050";
+  context.globalAlpha = 1.0;
+  context.strokeStyle = "#ffffff";
 
   nodes.forEach((node) => {
     context.beginPath();

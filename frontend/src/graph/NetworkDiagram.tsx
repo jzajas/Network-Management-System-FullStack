@@ -74,16 +74,8 @@ export function NetworkDiagram({ data }: { data: D3Data }) {
     if (!context) return;
     if (dimensions.width === 0 || dimensions.height === 0) return;
 
-    // ✅ DEBUG: Check the original data prop
-    console.log("Original data.nodes:", data.nodes.length);
-    console.log("Original data.links:", data.links.length);
-    console.log("Links:", data.links);
-
-    // Copy nodes/links for simulation
     const nodes: D3Node[] = data.nodes.map((d) => ({ ...d }));
     const links: D3Link[] = data.links.map((d) => ({ ...d }));
-
-    console.log("Copied links:", links.length);
 
     const simulation = d3
       .forceSimulation<D3Node>(nodes)
