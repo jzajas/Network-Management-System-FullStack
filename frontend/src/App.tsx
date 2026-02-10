@@ -1,12 +1,11 @@
+import { Navigate, Route, Routes } from "react-router-dom";
 import AppLayout from "./layout/AppLayout";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 export default function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/devices/:deviceId" element={<AppLayout />} />
-      </Routes>
-    </BrowserRouter>
+    <Routes>
+      <Route path="/" element={<Navigate to="/devices/0" replace />} />
+      <Route path="/devices/:id" element={<AppLayout />} />
+    </Routes>
   );
 }

@@ -8,12 +8,17 @@ import { eventLogStore } from "../state/eventLogStore";
 import { networkStore } from "../state/networkStore";
 
 export default function AppLayout() {
+  const { id } = useParams<{ id: string }>();
+
+  const rootDeviceId = Number(id);
   const events = useEventLog();
   const { deviceId } = useParams<{ deviceId: string }>();
   const rootDeviceId = Number(deviceId);
   const data = useD3NetworkData(rootDeviceId);
 
   useEffect(() => {
+    if (Number.isNaN(rootDeviceId)) return;
+
     const sseClient = new NetworkSseClient();
 
     sseClient.connect(
