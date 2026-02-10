@@ -9,22 +9,36 @@ export class NetworkSseClient {
 
   private networkDispatch?: React.Dispatch<NetworkAction>;
   private eventLogDispatch?: React.Dispatch<EventLogAction>;
-  private rootDeviceId?: number;
 
-  connect(
+  async connect(
     rootDeviceId: number,
     networkDispatch: React.Dispatch<NetworkAction>,
     eventLogDispatch: React.Dispatch<EventLogAction>,
   ) {
-    this.rootDeviceId = rootDeviceId;
     this.networkDispatch = networkDispatch;
     this.eventLogDispatch = eventLogDispatch;
+
+    try {
+      const topology = await this.fetchTopology();
+      this.networkDispatch({
+        type: "INITIAL_STATE_RECEIVED",
+        payload: {
+          rootDeviceId: rootDeviceId,
+          deviceIds: topology.devices.map((d) => d.id),
+          edges: topology.edges.map((e) => ({ from: e.from, to: e.to })),
+        },
+      });
+
+      console.log("CONNECTION_STATUS", "Initial topology loaded");
+    } catch (error) {
+      console.log("CONNECTION_STATUS", `Failed to load topology: ${error}`);
+      throw error;
+    }
 
     this.eventSource = new EventSource(
       `${API_BASE_URL}/devices/${rootDeviceId}/reachable-devices`,
     );
 
-    this.eventSource.onopen = (event) => this.handleOpen(event);
     this.eventSource.addEventListener("Initial State", (event) =>
       this.handleInitialState(JSON.parse((event as MessageEvent).data)),
     );
@@ -37,14 +51,20 @@ export class NetworkSseClient {
     this.eventSource.onerror = (event) => this.handleError(event);
   }
 
+  private async fetchTopology(): Promise<{
+    devices: Array<{ id: number; name: string }>;
+    edges: Array<{ from: number; to: number }>;
+  }> {
+    const response = await fetch(`${API_BASE_URL}/network/topology`);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch topology: ${response.statusText}`);
+    }
+    return response.json();
+  }
+
   disconnect() {
     this.eventSource?.close();
     this.eventSource = undefined;
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  private handleOpen(_: Event) {
-    this.log("CONNECTION_STATUS", "SSE connected");
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -57,12 +77,7 @@ export class NetworkSseClient {
     type: "INITIAL_STATE";
     deviceIds: number[];
   }) {
-    this.networkDispatch?.({
-      type: "INITIAL_STATE_RECEIVED",
-      payload: { rootDeviceId: this.rootDeviceId!, deviceIds: data.deviceIds },
-    });
-
-    this.log("SSE_UPDATE", JSON.stringify(data, null, 2));
+    this.log("SSE_UPDATE", `Initial State: ${JSON.stringify(data, null, 2)}`);
   }
 
   private handleAddedDevice(data: { type: "ADDED"; deviceId: number }) {

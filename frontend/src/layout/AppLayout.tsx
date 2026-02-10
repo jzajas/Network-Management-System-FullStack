@@ -1,26 +1,32 @@
 import { useEffect } from "react";
 import { useParams } from "react-router-dom";
+import { useD3NetworkData } from "../graph/d3/useD3NetworkData";
+import { NetworkDiagram } from "../graph/NetworkDiagram";
 import { useEventLog } from "../hooks/useEventLog";
 import { NetworkSseClient } from "../sse/NetworkSseClient";
 import { eventLogStore } from "../state/eventLogStore";
 import { networkStore } from "../state/networkStore";
 
 export default function AppLayout() {
-  const { id } = useParams<{ id: string }>();
-
-  const rootDeviceId = Number(id);
   const events = useEventLog();
+  const { id } = useParams<{ id: string }>();
+  const rootDeviceId = Number(id);
+  const data = useD3NetworkData(rootDeviceId);
 
   useEffect(() => {
     if (Number.isNaN(rootDeviceId)) return;
 
     const sseClient = new NetworkSseClient();
 
-    sseClient.connect(
-      rootDeviceId,
-      networkStore.dispatch.bind(networkStore),
-      eventLogStore.dispatch.bind(eventLogStore),
-    );
+    sseClient
+      .connect(
+        rootDeviceId,
+        networkStore.dispatch.bind(networkStore),
+        eventLogStore.dispatch.bind(eventLogStore),
+      )
+      .catch((error) => {
+        console.error("SSE connection failed:", error);
+      });
 
     return () => {
       sseClient.disconnect();
@@ -29,12 +35,13 @@ export default function AppLayout() {
 
   return (
     <div className="h-screen w-screen bg-slate-950 text-slate-200 flex">
+      {/* <div className="h-screen w-screen flex"> */}
       <main className="flex-1 relative flex items-center justify-center border-r border-slate-800">
         <div className="absolute top-4 left-4 text-sm text-slate-400">
           Network Topology – Root device {rootDeviceId}
         </div>
-        <div className="flex items-center justify-center text-slate-600">
-          <span>Graph will render here</span>
+        <div className="h-full w-full">
+          <NetworkDiagram data={data} />
         </div>
       </main>
 
