@@ -70,7 +70,7 @@ export class NetworkSseClient {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   private handleOpen(_: Event) {
-    this.log("CONNECTION_STATUS", "SSE connected");
+    // this.log("CONNECTION_STATUS", "SSE connected");
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -83,18 +83,7 @@ export class NetworkSseClient {
     type: "INITIAL_STATE";
     deviceIds: number[];
   }) {
-    // this.networkDispatch?.({
-    //   type: "INITIAL_STATE_RECEIVED",
-    //   payload: {
-    //     rootDeviceId: this.rootDeviceId!,
-    //     deviceIds: data.deviceIds,
-    //     // edges: []
-    //     edges: data.edges || [],
-    //   },
-    // });
     this.log("SSE_UPDATE", `Initial State: ${JSON.stringify(data, null, 2)}`);
-
-    // this.log("SSE_UPDATE", JSON.stringify(data, null, 2));
   }
 
   private handleAddedDevice(data: { type: "ADDED"; deviceId: number }) {
