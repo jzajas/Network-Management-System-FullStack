@@ -22,9 +22,11 @@ export function drawNetwork(
     const bothEnabled =
       source.group !== "disabled" && target.group !== "disabled";
 
-    context.strokeStyle = bothEnabled ? "#f2ff00" : "#ff0000";
-    context.globalAlpha = bothEnabled ? 1.0 : 0.2;
-    context.lineWidth = bothEnabled ? 2 : 1;
+    context.strokeStyle = bothEnabled ? "#f2ff00" : "#fd0000";
+    context.globalAlpha = 1.0;
+    context.lineWidth = 2;
+    
+    
 
     context.beginPath();
     context.moveTo(source.x!, source.y!);
@@ -32,7 +34,6 @@ export function drawNetwork(
     context.stroke();
   });
 
-  context.strokeStyle = "#e65050";
   context.globalAlpha = 1.0;
   context.strokeStyle = "#ffffff";
 

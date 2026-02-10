@@ -36,7 +36,7 @@ export function NetworkDiagram({ data }: { data: D3Data }) {
 
     const nodes: D3Node[] = data.nodes.map((d) => ({ ...d }));
     const links: D3Link[] = data.links.map((d) => ({ ...d }));
-    
+
     nodesRef.current = nodes;
 
     const simulation = d3
@@ -79,7 +79,7 @@ export function NetworkDiagram({ data }: { data: D3Data }) {
     const rect = canvas.getBoundingClientRect();
     const scaleX = canvas.width / rect.width;
     const scaleY = canvas.height / rect.height;
-    
+
     const mouseX = (event.clientX - rect.left) * scaleX;
     const mouseY = (event.clientY - rect.top) * scaleY;
 
@@ -116,7 +116,7 @@ export function NetworkDiagram({ data }: { data: D3Data }) {
           console.warn(`Unknown group "${currentGroup}" for node ${nodeId}`);
           return;
       }
-      
+
       await fetch(`${API_BASE_URL}/devices/${nodeId}`, {
         method: "PATCH",
         headers: {
@@ -124,7 +124,7 @@ export function NetworkDiagram({ data }: { data: D3Data }) {
         },
         body: JSON.stringify({ active: newState }),
       });
-      
+
     } catch (error) {
       console.error("Failed to toggle device:", error);
     }
