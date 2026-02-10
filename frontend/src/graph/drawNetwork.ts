@@ -11,8 +11,6 @@ export function drawNetwork(
 ) {
   context.clearRect(0, 0, width, height);
 
-  context.strokeStyle = "#f2ff00";
-  context.lineWidth = 1;
   links.forEach((link) => {
     const source = link.source as D3Node;
     const target = link.target as D3Node;
@@ -24,7 +22,7 @@ export function drawNetwork(
     const bothEnabled =
       source.group !== "disabled" && target.group !== "disabled";
 
-    context.strokeStyle = bothEnabled ? "#f2ff00" : "#333333";
+    context.strokeStyle = bothEnabled ? "#f2ff00" : "#ff0000";
     context.globalAlpha = bothEnabled ? 1.0 : 0.2;
     context.lineWidth = bothEnabled ? 2 : 1;
 

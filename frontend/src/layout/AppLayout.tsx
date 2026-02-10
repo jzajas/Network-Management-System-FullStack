@@ -35,7 +35,6 @@ export default function AppLayout() {
 
   return (
     <div className="h-screen w-screen bg-slate-950 text-slate-200 flex">
-      {/* <div className="h-screen w-screen flex"> */}
       <main className="flex-1 relative flex items-center justify-center border-r border-slate-800">
         <div className="absolute top-4 left-4 text-sm text-slate-400">
           Network Topology – Root device {rootDeviceId}
